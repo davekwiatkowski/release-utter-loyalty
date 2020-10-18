@@ -1,8 +1,9 @@
 import { configureResolution, createWebGL2 } from './GLUtils';
+import IDisposable from './IDisposable';
 import { logInfo } from './Logger';
 import Renderer from './Renderer';
 
-class Game {
+class Game implements IDisposable {
   private _renderer: Renderer;
   private _isPaused: boolean = false;
 
@@ -14,6 +15,13 @@ class Game {
     this._start();
 
     window.addEventListener('keydown', this._onKeyDown);
+  }
+
+  dispose(): void {
+    logInfo('Quit game!');
+    this._renderer.dispose();
+    window.removeEventListener('keydown', this._onKeyDown);
+    this._onQuit();
   }
 
   private _onKeyDown = (event: KeyboardEvent) => {
@@ -28,7 +36,7 @@ class Game {
       }
     } else if (key === 'q') {
       if (this._isPaused) {
-        this._quit();
+        this.dispose();
       }
     }
   };
@@ -43,13 +51,6 @@ class Game {
 
   private _unPause() {
     logInfo('Un-paused game!');
-  }
-
-  private _quit() {
-    logInfo('Quit game!');
-    this._renderer.dispose();
-    window.removeEventListener('keydown', this._onKeyDown);
-    this._onQuit();
   }
 }
 

@@ -1,7 +1,8 @@
 import { createProgramWithSources, loseWebGLContext } from './GLUtils';
+import IDisposable from './IDisposable';
 import { FragmentShaderSource, VertexShaderSource } from './Shaders';
 
-class Renderer {
+class Renderer implements IDisposable {
   private _program: WebGLProgram;
 
   constructor(private _gl: WebGL2RenderingContext) {
@@ -23,6 +24,15 @@ class Renderer {
     _gl.vertexAttribPointer(positionAttribLocation, 2, _gl.FLOAT, false, 0, 0);
 
     _gl.useProgram(this._program);
+  }
+
+  dispose(): void {
+    loseWebGLContext(this._gl);
+  }
+
+  render() {
+    this._clear();
+    this._drawArrays();
   }
 
   private _drawArrays() {
@@ -47,15 +57,6 @@ class Renderer {
   private _clear() {
     this._gl.clearColor(1, 0, 1, 1);
     this._gl.clear(this._gl.COLOR_BUFFER_BIT);
-  }
-
-  dispose() {
-    loseWebGLContext(this._gl);
-  }
-
-  render() {
-    this._clear();
-    this._drawArrays();
   }
 }
 
