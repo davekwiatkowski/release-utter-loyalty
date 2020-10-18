@@ -1,5 +1,5 @@
-const vert = (tsa: TemplateStringsArray) => tsa;
-const frag = (tsa: TemplateStringsArray) => tsa;
+const vert = (tsa: any) => tsa;
+const frag = (tsa: any) => tsa;
 
 export const VertexShaderSource = vert`#version 300 es 
   #pragma vscode_glsllint_stage : vert
