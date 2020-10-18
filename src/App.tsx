@@ -1,13 +1,14 @@
 import React, { FC, useState } from 'react';
+import { logDebug } from './canvas/Logger';
 import Styles from './Styles';
 import ControlsView from './views/ControlsView';
 import GameView from './views/GameView';
 import MenuView from './views/MenuView';
 
 enum Route {
-  Game = 'Game',
-  Menu = 'Menu',
-  Controls = 'Controls',
+  Game,
+  Menu,
+  Controls,
 }
 
 const App: FC = () => {
@@ -17,10 +18,12 @@ const App: FC = () => {
   const handleGame = () => setRoute(Route.Game);
   const handleControls = () => setRoute(Route.Controls);
 
+  logDebug('Rendering app');
+
   const navigate = () => {
     switch (route) {
       case Route.Game:
-        return <GameView onPause={handleMenu}></GameView>;
+        return <GameView onQuit={handleMenu}></GameView>;
       case Route.Menu:
         return (
           <MenuView

@@ -4,34 +4,39 @@ enum LogMode {
   Error = 'Error',
 }
 
-function log(context: object, message: string, mode: LogMode, data?: any) {
+function log(message: string, mode: LogMode, data?: any) {
   const modeOut = `[${mode}]`;
-  const contextOut = `(${context.constructor.name})`;
   const timeOut = new Date().toLocaleTimeString();
   const messageOut = `'${message}'`;
   switch (mode) {
     case LogMode.Debug:
-      console.log(timeOut, modeOut, contextOut, messageOut, data, context);
+      data
+        ? console.debug(timeOut, modeOut, messageOut, data)
+        : console.debug(timeOut, modeOut, messageOut);
       break;
     case LogMode.Info:
-      console.log(timeOut, modeOut, contextOut, messageOut, data);
+      data
+        ? console.info(timeOut, modeOut, messageOut, data)
+        : console.info(timeOut, modeOut, messageOut);
       break;
     case LogMode.Error:
-      console.error(timeOut, modeOut, contextOut, messageOut, data);
+      data
+        ? console.error(timeOut, modeOut, messageOut, data)
+        : console.error(timeOut, modeOut, messageOut);
       break;
     default:
-      throw Error('Now log mode of that type.');
+      throw Error('No log mode of that type.');
   }
 }
 
-export function logDebug(context: object, message: string, data?: any): void {
-  log(context, message, LogMode.Debug, data);
+export function logDebug(message: string, data?: any): void {
+  log(message, LogMode.Debug, data);
 }
 
-export function logError(context: object, message: string, data?: any): void {
-  log(context, message, LogMode.Error, data);
+export function logError(message: string, data?: any): void {
+  log(message, LogMode.Error, data);
 }
 
-export function logInfo(context: object, message: string, data?: any): void {
-  log(context, message, LogMode.Info, data);
+export function logInfo(message: string, data?: any): void {
+  log(message, LogMode.Info, data);
 }

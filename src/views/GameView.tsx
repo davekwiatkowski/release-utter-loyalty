@@ -1,35 +1,24 @@
 import React, { FC } from 'react';
 import Game from '../canvas/Game';
+import { logDebug } from '../canvas/Logger';
 import ViewComponent from '../components/ViewComponent';
 import Styles from '../Styles';
 
 export interface IGameViewProps {
-  onPause: () => void;
+  onQuit: () => void;
 }
 
 const GameView: FC<IGameViewProps> = (props) => {
   let game: Game;
 
-  const handleEscapeKeyDown = (event: KeyboardEvent) => {
-    const key = event.key;
-    if (key === 'Escape') {
-      window.removeEventListener('keydown', handleEscapeKeyDown);
-      game.pause();
-      props.onPause();
-    }
-  };
-  window.addEventListener('keydown', handleEscapeKeyDown);
-
   const handleCanvasRef = (canvas: HTMLCanvasElement | null) => {
     if (!canvas) {
       return;
     }
-    window.onresize = () => {
-      canvas.width = window.innerWidth * window.devicePixelRatio;
-      canvas.height = window.innerHeight * window.devicePixelRatio;
-    };
-    game = new Game(canvas);
+    if (!game) game = new Game(canvas, props.onQuit);
   };
+
+  logDebug('Rendering game');
 
   return (
     <ViewComponent>

@@ -1,9 +1,9 @@
 const vert = (tsa: TemplateStringsArray): string => tsa.toString();
 const frag = (tsa: TemplateStringsArray): string => tsa.toString();
 
-export const VertexShaderSource = vert`#version 300 es 
-  #pragma vscode_glsllint_stage : vert
-
+export const VertexShaderSource = vert`#version 300 es
+#pragma vscode_glsllint_stage : vert
+  
   in vec4 a_position;
 
   void main() {
@@ -12,16 +12,15 @@ export const VertexShaderSource = vert`#version 300 es
 `;
 
 export const FragmentShaderSource = frag`#version 300 es
-  #pragma vscode_glsllint_stage : frag
+#pragma vscode_glsllint_stage : frag
 
-  // fragment shaders don't have a default precision so we need
-  // to pick one. highp is a good default. It means "high precision"
   precision highp float;
 
-  // we need to declare an output for the fragment shader
-  out vec4 outColor;
+  uniform vec4 u_color;
+
+  out vec4 out_color;
 
   void main() {
-    outColor = vec4(1, 0, 0.5, 1);
+    out_color = u_color;
   }
 `;
