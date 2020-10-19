@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { ViewComponent } from '../components/ViewComponent';
+import { ViewComponent } from './components/ViewComponent';
 
 export interface IMenuViewProps {
   onStartGame: () => void;

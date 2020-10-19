@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
-import { ViewComponent } from '../components/ViewComponent';
+import { ViewComponent } from './components/ViewComponent';
 import { Game } from '../game/Game';
-import { Styles } from '../Styles';
+import { Styles } from './components/Styles';
 
 export interface IGameViewProps {
   onQuit: () => void;

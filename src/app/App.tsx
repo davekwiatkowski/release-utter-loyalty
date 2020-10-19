@@ -1,13 +1,13 @@
 import React, { FC, useState } from 'react';
-import { Styles } from './Styles';
-import { ControlsView } from './views/ControlsView';
-import { GameView } from './views/GameView';
-import { MenuView } from './views/MenuView';
+import { Styles } from './components/Styles';
+import { ControlsView } from './ControlsView';
+import { GameView } from './GameView';
+import { MenuView } from './MenuView';
 
 enum Route {
-  Game,
-  Menu,
-  Controls,
+  Game = 'Game',
+  Menu = 'Menu',
+  Controls = 'Controls',
 }
 
 export const App: FC = () => {

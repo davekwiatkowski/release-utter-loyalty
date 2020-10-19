@@ -1,4 +1,4 @@
-import { Styles } from '../Styles';
+import { Styles } from './Styles';
 import React, { CSSProperties, FC } from 'react';
 
 export interface IViewProps {
