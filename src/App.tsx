@@ -1,9 +1,8 @@
 import React, { FC, useState } from 'react';
-import { logDebug } from './canvas/Logger';
-import Styles from './Styles';
-import ControlsView from './views/ControlsView';
-import GameView from './views/GameView';
-import MenuView from './views/MenuView';
+import { Styles } from './Styles';
+import { ControlsView } from './views/ControlsView';
+import { GameView } from './views/GameView';
+import { MenuView } from './views/MenuView';
 
 enum Route {
   Game,
@@ -11,14 +10,12 @@ enum Route {
   Controls,
 }
 
-const App: FC = () => {
+export const App: FC = () => {
   const [route, setRoute] = useState(Route.Menu);
 
   const handleMenu = () => setRoute(Route.Menu);
   const handleGame = () => setRoute(Route.Game);
   const handleControls = () => setRoute(Route.Controls);
-
-  logDebug('Rendering app');
 
   const navigate = () => {
     switch (route) {
@@ -44,5 +41,3 @@ const styles: Styles = {
     height: '100vh',
   },
 };
-
-export default App;

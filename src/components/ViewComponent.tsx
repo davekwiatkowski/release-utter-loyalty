@@ -1,11 +1,11 @@
-import Styles from '../Styles';
+import { Styles } from '../Styles';
 import React, { CSSProperties, FC } from 'react';
 
 export interface IViewProps {
   style?: CSSProperties;
 }
 
-const ViewComponent: FC<IViewProps> = (props) => {
+export const ViewComponent: FC<IViewProps> = (props) => {
   return <div style={{ ...props.style, ...styles.view }}>{props.children}</div>;
 };
 
@@ -20,5 +20,3 @@ const styles: Styles = {
     position: 'fixed',
   },
 };
-
-export default ViewComponent;

@@ -1,12 +1,12 @@
 import React, { FC } from 'react';
-import ViewComponent from '../components/ViewComponent';
+import { ViewComponent } from '../components/ViewComponent';
 
 export interface IMenuViewProps {
   onStartGame: () => void;
   onControls: () => void;
 }
 
-const MenuView: FC<IMenuViewProps> = (props) => {
+export const MenuView: FC<IMenuViewProps> = (props) => {
   return (
     <ViewComponent>
       <h1>Release utter loyalty</h1>
@@ -17,5 +17,3 @@ const MenuView: FC<IMenuViewProps> = (props) => {
     </ViewComponent>
   );
 };
-
-export default MenuView;

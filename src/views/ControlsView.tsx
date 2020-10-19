@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
-import ViewComponent from '../components/ViewComponent';
+import { ViewComponent } from '../components/ViewComponent';
 
 export interface IControlsViewProps {
   onMenu: () => void;
 }
 
-const ControlsView: FC<IControlsViewProps> = (props) => {
+export const ControlsView: FC<IControlsViewProps> = (props) => {
   return (
     <ViewComponent>
       <div>
@@ -17,5 +17,3 @@ const ControlsView: FC<IControlsViewProps> = (props) => {
     </ViewComponent>
   );
 };
-
-export default ControlsView;

@@ -1,16 +1,18 @@
-import { configureResolution, createWebGL2 } from './GLUtils';
-import IDisposable from './IDisposable';
-import { logInfo } from './Logger';
-import Renderer from './Renderer';
+import { IDisposable } from './IDisposable';
+import { Renderer } from './Renderer';
+import { GLUtil } from './GLUtil';
+import { Logger } from './Logger';
 
-class Game implements IDisposable {
+export class Game implements IDisposable {
   private _renderer: Renderer;
   private _isPaused: boolean = false;
+  private _logger = new Logger(Game);
 
-  constructor(private _canvas: HTMLCanvasElement, private _onQuit: () => void) {
-    const gl = createWebGL2(_canvas);
-    configureResolution(gl);
-    this._renderer = new Renderer(gl);
+  constructor(canvas: HTMLCanvasElement, private _onQuit: () => void) {
+    const gl = GLUtil.createWebGL2RenderingContext(canvas);
+    const glUtil = new GLUtil(gl);
+    glUtil.configureResolution();
+    this._renderer = new Renderer(gl, glUtil);
 
     this._start();
 
@@ -18,7 +20,7 @@ class Game implements IDisposable {
   }
 
   dispose(): void {
-    logInfo('Quit game!');
+    this._logger.logInfo('Quit game!');
     this._renderer.dispose();
     window.removeEventListener('keydown', this._onKeyDown);
     this._onQuit();
@@ -46,12 +48,10 @@ class Game implements IDisposable {
   }
 
   private _pause() {
-    logInfo('Paused game!');
+    this._logger.logInfo('Paused game!');
   }
 
   private _unPause() {
-    logInfo('Un-paused game!');
+    this._logger.logInfo('Un-paused game!');
   }
 }
-
-export default Game;

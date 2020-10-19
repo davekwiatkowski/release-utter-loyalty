@@ -1,17 +1,19 @@
-import { createProgramWithSources, loseWebGLContext } from './GLUtils';
-import IDisposable from './IDisposable';
+import { GLUtil } from './GLUtil';
+import { IDisposable } from './IDisposable';
 import { FragmentShaderSource, VertexShaderSource } from './Shaders';
 
-class Renderer implements IDisposable {
+export class Renderer implements IDisposable {
   private _program: WebGLProgram;
 
-  constructor(private _gl: WebGL2RenderingContext) {
-    this._program = createProgramWithSources(
-      _gl,
+  constructor(private _gl: WebGL2RenderingContext, private _glUtil: GLUtil) {
+    // Program
+    this._program = _glUtil.createProgramWithSources(
       VertexShaderSource,
       FragmentShaderSource
     );
+    _gl.useProgram(this._program);
 
+    // Attributes
     const positionsData = new Float32Array([0, 0, 0, 0.5, 0.7, 0]);
     _gl.bindBuffer(_gl.ARRAY_BUFFER, _gl.createBuffer());
     _gl.bufferData(_gl.ARRAY_BUFFER, positionsData, _gl.STATIC_DRAW);
@@ -23,19 +25,7 @@ class Renderer implements IDisposable {
     _gl.enableVertexAttribArray(positionAttribLocation);
     _gl.vertexAttribPointer(positionAttribLocation, 2, _gl.FLOAT, false, 0, 0);
 
-    _gl.useProgram(this._program);
-  }
-
-  dispose(): void {
-    loseWebGLContext(this._gl);
-  }
-
-  render() {
-    this._clear();
-    this._drawArrays();
-  }
-
-  private _drawArrays() {
+    // Uniforms
     const colorUniformLocation = this._gl.getUniformLocation(
       this._program,
       'u_color'
@@ -47,11 +37,19 @@ class Renderer implements IDisposable {
       Math.random(),
       1
     );
+  }
 
-    const primitiveType = this._gl.TRIANGLES;
-    const offset = 0;
-    const count = 3;
-    this._gl.drawArrays(primitiveType, offset, count);
+  dispose(): void {
+    this._glUtil.loseWebGLContext();
+  }
+
+  render() {
+    this._clear();
+    this._drawArrays();
+  }
+
+  private _drawArrays() {
+    this._gl.drawArrays(this._gl.TRIANGLES, 0, 3);
   }
 
   private _clear() {
@@ -59,5 +57,3 @@ class Renderer implements IDisposable {
     this._gl.clear(this._gl.COLOR_BUFFER_BIT);
   }
 }
-
-export default Renderer;
