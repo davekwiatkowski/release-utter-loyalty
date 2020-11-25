@@ -1,17 +1,17 @@
 import { Color } from '../Color';
-import { IDrawable } from './IDrawable';
-import { Triangle } from './Triangle';
+import { IMesh } from './IMesh';
+import { TriangleMesh } from './TriangleMesh';
 import { Vertex } from './Vertex';
-import { Quad } from './Quad';
+import { QuadMesh } from './QuadMesh';
 import { Vec3 } from '../../math/Vec3';
 
-export class QuadPrism implements IDrawable {
-  private _q0: Quad;
-  private _q1: Quad;
-  private _q2: Quad;
-  private _q3: Quad;
-  private _q4: Quad;
-  private _q5: Quad;
+export class QuadPrismMesh implements IMesh {
+  private _q0: QuadMesh;
+  private _q1: QuadMesh;
+  private _q2: QuadMesh;
+  private _q3: QuadMesh;
+  private _q4: QuadMesh;
+  private _q5: QuadMesh;
 
   constructor(
     public x0y0z0: Vertex, // bottom back left
@@ -23,12 +23,12 @@ export class QuadPrism implements IDrawable {
     public x1y1z1: Vertex, // top front right
     public x0y1z1: Vertex // top front left
   ) {
-    this._q0 = new Quad(this.x0y0z0, this.x0y0z1, this.x1y0z1, this.x1y0z0); // bottom
-    this._q1 = new Quad(this.x0y1z0, this.x1y1z0, this.x1y1z1, this.x0y1z1); // top
-    this._q2 = new Quad(this.x1y1z0, this.x0y1z0, this.x0y0z0, this.x1y0z0); // back
-    this._q3 = new Quad(this.x0y1z1, this.x1y1z1, this.x1y0z1, this.x0y0z1); // front
-    this._q4 = new Quad(this.x1y1z1, this.x1y1z0, this.x1y0z0, this.x1y0z1); // right
-    this._q5 = new Quad(this.x0y1z0, this.x0y1z1, this.x0y0z1, this.x0y0z0); // left
+    this._q0 = new QuadMesh(this.x0y0z0, this.x0y0z1, this.x1y0z1, this.x1y0z0); // bottom
+    this._q1 = new QuadMesh(this.x0y1z0, this.x1y1z0, this.x1y1z1, this.x0y1z1); // top
+    this._q2 = new QuadMesh(this.x1y1z0, this.x0y1z0, this.x0y0z0, this.x1y0z0); // back
+    this._q3 = new QuadMesh(this.x0y1z1, this.x1y1z1, this.x1y0z1, this.x0y0z1); // front
+    this._q4 = new QuadMesh(this.x1y1z1, this.x1y1z0, this.x1y0z0, this.x1y0z1); // right
+    this._q5 = new QuadMesh(this.x0y1z0, this.x0y1z1, this.x0y0z1, this.x0y0z0); // left
   }
 
   static fromPositionsAndColor(
@@ -41,8 +41,8 @@ export class QuadPrism implements IDrawable {
     p6: Vec3,
     p7: Vec3,
     color: Color
-  ): QuadPrism {
-    return new QuadPrism(
+  ): QuadPrismMesh {
+    return new QuadPrismMesh(
       new Vertex(p0, color),
       new Vertex(p1, color),
       new Vertex(p2, color),
@@ -54,7 +54,7 @@ export class QuadPrism implements IDrawable {
     );
   }
 
-  getTriangles(): Triangle[] {
+  getTriangles(): TriangleMesh[] {
     return [
       ...this._q0.getTriangles(),
       ...this._q1.getTriangles(),

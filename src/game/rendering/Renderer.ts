@@ -1,14 +1,11 @@
 import { GLUtil } from './GLUtil';
 import { IDisposable } from '../IDisposable';
-import { Triangle } from './models/Triangle';
+import { TriangleMesh } from './meshes/TriangleMesh';
 import { FragmentShaderSource, VertexShaderSource } from './Shaders';
-import { Color } from './Color';
-import { Vertex } from './models/Vertex';
-import { QuadPrism } from './models/QuadPrism';
-import { degToRad as degreesToRadians } from '../math/MathUtil';
+import { Vertex } from './meshes/Vertex';
 import { Mat4 } from '../math/Mat4';
 import { Vec3 } from '../math/Vec3';
-import { IDrawable } from './models/IDrawable';
+import { IModel } from './models/IModel';
 import { Game } from '../Game';
 
 export class Renderer implements IDisposable {
@@ -16,17 +13,6 @@ export class Renderer implements IDisposable {
 
   private _mvpMatrixLocation: WebGLUniformLocation | null;
   private _positionAttribLocation: number;
-
-  private _drawable: IDrawable = new QuadPrism(
-    new Vertex(new Vec3(-0.5, -0.5, -0.5), Color.random()),
-    new Vertex(new Vec3(+0.5, -0.5, -0.5), Color.random()),
-    new Vertex(new Vec3(+0.5, -0.5, +0.5), Color.random()),
-    new Vertex(new Vec3(-0.5, -0.5, +0.5), Color.random()),
-    new Vertex(new Vec3(-0.5, +0.5, -0.5), Color.random()),
-    new Vertex(new Vec3(+0.5, +0.5, -0.5), Color.random()),
-    new Vertex(new Vec3(+0.5, +0.5, +0.5), Color.random()),
-    new Vertex(new Vec3(-0.5, +0.5, +0.5), Color.random())
-  );
 
   constructor(private _gl: WebGL2RenderingContext, private _glUtil: GLUtil) {
     _glUtil.configureResolution();
@@ -49,6 +35,9 @@ export class Renderer implements IDisposable {
     _gl.frontFace(_gl.CW);
     _gl.enable(_gl.CULL_FACE);
 
+    _gl.enable(_gl.DEPTH_TEST);
+    _gl.depthFunc(_gl.LEQUAL);
+
     _gl.useProgram(this._program);
   }
 
@@ -56,7 +45,7 @@ export class Renderer implements IDisposable {
     this._glUtil.loseWebGLContext();
   }
 
-  render(game: Game) {
+  render(models: IModel[], game: Game) {
     const cameraPosition = new Vec3(0, 0, 2);
     const cameraTarget = new Vec3(0, 0, 0);
 
@@ -70,25 +59,27 @@ export class Renderer implements IDisposable {
     const viewMatrix = Mat4.identity()
       .lookAt(cameraPosition, cameraTarget)
       .inverse();
-    const modelMatrix = Mat4.identity()
-      .rotateX(degreesToRadians(game.time * 0.5))
-      .rotateY(degreesToRadians(game.time * 0.7));
-    const modelViewProjectionMatrix = modelMatrix
+    const viewProjectionMatrix = Mat4.identity()
       .multiply(viewMatrix)
       .multiply(projectionMatrix);
 
-    this._gl.uniformMatrix4fv(
-      this._mvpMatrixLocation,
-      false,
-      modelViewProjectionMatrix.toFlatArray()
-    );
-
     // Draw
     this._clear();
-    this._drawArrays(this._drawable.getTriangles());
+
+    models.forEach((model) => {
+      const modelViewProjectionMatrix = model.matrix.multiply(
+        viewProjectionMatrix
+      );
+      this._gl.uniformMatrix4fv(
+        this._mvpMatrixLocation,
+        false,
+        modelViewProjectionMatrix.toFlatArray()
+      );
+      this._drawArrays(model.mesh.getTriangles());
+    });
   }
 
-  private _drawArrays(triangles: Triangle[], _gl = this._gl) {
+  private _drawArrays(triangles: TriangleMesh[], _gl = this._gl) {
     const vertexData = this._createVertexDataFromTriangles(triangles);
     _gl.bindBuffer(_gl.ARRAY_BUFFER, _gl.createBuffer());
     _gl.bufferData(_gl.ARRAY_BUFFER, vertexData, _gl.STATIC_DRAW);
@@ -117,20 +108,22 @@ export class Renderer implements IDisposable {
     this._gl.drawArrays(
       this._gl.TRIANGLES,
       0,
-      triangles.length * Triangle.VERTEX_COUNT
+      triangles.length * TriangleMesh.VERTEX_COUNT
     );
   }
 
-  private _createVertexDataFromTriangles(triangles: Triangle[]): Float32Array {
+  private _createVertexDataFromTriangles(
+    triangles: TriangleMesh[]
+  ): Float32Array {
     const vertexDataSize =
-      triangles.length * Vertex.DATA_COUNT * Triangle.VERTEX_COUNT;
+      triangles.length * Vertex.DATA_COUNT * TriangleMesh.VERTEX_COUNT;
     const vertexData = new Float32Array(vertexDataSize);
     for (let ti = 0; ti < triangles.length; ++ti) {
       const t = triangles[ti];
-      const vertexKeys = Object.keys(t) as (keyof Triangle)[];
-      for (let vi = 0; vi < Triangle.VERTEX_COUNT; ++vi) {
+      const vertexKeys = Object.keys(t) as (keyof TriangleMesh)[];
+      for (let vi = 0; vi < TriangleMesh.VERTEX_COUNT; ++vi) {
         const vertexDataIndex =
-          ti * Vertex.DATA_COUNT * Triangle.VERTEX_COUNT +
+          ti * Vertex.DATA_COUNT * TriangleMesh.VERTEX_COUNT +
           Vertex.DATA_COUNT * vi;
         const vertex = t[vertexKeys[vi]];
         vertexData[vertexDataIndex + 0] = vertex.position.x;
@@ -146,6 +139,6 @@ export class Renderer implements IDisposable {
 
   private _clear() {
     this._gl.clearColor(0, 0, 0, 1);
-    this._gl.clear(this._gl.COLOR_BUFFER_BIT);
+    this._gl.clear(this._gl.COLOR_BUFFER_BIT | this._gl.DEPTH_BUFFER_BIT);
   }
 }

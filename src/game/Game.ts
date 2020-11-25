@@ -2,6 +2,9 @@ import { IDisposable } from './IDisposable';
 import { Renderer } from './rendering/Renderer';
 import { GLUtil } from './rendering/GLUtil';
 import { Logger } from './Logger';
+import { IModel } from './rendering/models/IModel';
+import { BlockModel } from './rendering/models/BlockModel';
+import { Vec3 } from './math/Vec3';
 
 export class Game implements IDisposable {
   private _renderer: Renderer;
@@ -13,6 +16,12 @@ export class Game implements IDisposable {
   private _lastFrameCountTime = 0;
   private _frameCountsPerSecond = 1;
   private _framesPerSecond = 120;
+
+  private _models: IModel[] = [
+    new BlockModel(new Vec3(-1, -1, -1.5)),
+    new BlockModel(new Vec3(1, 0, -1)),
+    new BlockModel(new Vec3(0, 1, -2)),
+  ];
 
   public time = 0;
 
@@ -54,10 +63,15 @@ export class Game implements IDisposable {
     this._loop();
   }
 
+  private _update() {
+    this._models.forEach((model) => model.update(this));
+  }
+
   private _loop() {
     const thisTime = Date.now();
     if (thisTime - this._lastFrameTime >= 1000 / this._framesPerSecond) {
-      this._renderer.render(this);
+      this._update();
+      this._renderer.render(this._models, this);
       this._lastFrameTime = thisTime;
       ++this._frames;
       ++this.time;
