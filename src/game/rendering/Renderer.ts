@@ -49,9 +49,6 @@ export class Renderer implements IDisposable {
     _gl.frontFace(_gl.CW);
     _gl.enable(_gl.CULL_FACE);
 
-    _gl.enable(_gl.DEPTH_TEST);
-    _gl.depthFunc(_gl.LEQUAL);
-
     _gl.useProgram(this._program);
   }
 
@@ -149,7 +146,6 @@ export class Renderer implements IDisposable {
 
   private _clear() {
     this._gl.clearColor(0, 0, 0, 1);
-    this._gl.clearDepth(1.0);
-    this._gl.clear(this._gl.COLOR_BUFFER_BIT | this._gl.DEPTH_BUFFER_BIT);
+    this._gl.clear(this._gl.COLOR_BUFFER_BIT);
   }
 }
