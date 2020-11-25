@@ -1,4 +1,4 @@
-import { Logger } from './Logger';
+import { Logger } from '../Logger';
 
 export class GLUtil {
   private _logger = new Logger(GLUtil);
@@ -20,10 +20,10 @@ export class GLUtil {
       this._gl.canvas.width = theWindow.innerWidth * theWindow.devicePixelRatio;
       this._gl.canvas.height =
         theWindow.innerHeight * theWindow.devicePixelRatio;
+      this._gl.viewport(0, 0, this._gl.canvas.width, this._gl.canvas.height);
     };
     theWindow.onresize = resize;
     resize();
-    this._gl.viewport(0, 0, this._gl.canvas.width, this._gl.canvas.height);
   }
 
   createShader(source: string, type: number): WebGLShader {

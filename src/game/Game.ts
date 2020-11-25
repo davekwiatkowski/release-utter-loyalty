@@ -1,6 +1,6 @@
 import { IDisposable } from './IDisposable';
-import { Renderer } from './Renderer';
-import { GLUtil } from './GLUtil';
+import { Renderer } from './rendering/Renderer';
+import { GLUtil } from './rendering/GLUtil';
 import { Logger } from './Logger';
 
 export class Game implements IDisposable {
@@ -8,10 +8,17 @@ export class Game implements IDisposable {
   private _isPaused: boolean = false;
   private _logger = new Logger(Game);
 
+  private _lastFrameTime = 0;
+  private _frames = 0;
+  private _lastFrameCountTime = 0;
+  private _frameCountsPerSecond = 1;
+  private _framesPerSecond = 120;
+
+  public time = 0;
+
   constructor(canvas: HTMLCanvasElement, private _onQuit: () => void) {
     const gl = GLUtil.createWebGL2RenderingContext(canvas);
     const glUtil = new GLUtil(gl);
-    glUtil.configureResolution();
     this._renderer = new Renderer(gl, glUtil);
 
     this._start();
@@ -44,7 +51,26 @@ export class Game implements IDisposable {
   };
 
   private _start() {
-    this._renderer.render();
+    this._loop();
+  }
+
+  private _loop() {
+    const thisTime = Date.now();
+    if (thisTime - this._lastFrameTime >= 1000 / this._framesPerSecond) {
+      this._renderer.render(this);
+      this._lastFrameTime = thisTime;
+      ++this._frames;
+      ++this.time;
+    }
+    if (
+      thisTime - this._lastFrameCountTime >=
+      1000 / this._frameCountsPerSecond
+    ) {
+      this._logger.logInfo(`fps: ${this._frames * this._frameCountsPerSecond}`);
+      this._lastFrameCountTime = thisTime;
+      this._frames = 0;
+    }
+    requestAnimationFrame(() => this._loop());
   }
 
   private _pause() {

@@ -11,7 +11,7 @@ enum Route {
 }
 
 export const App: FC = () => {
-  const [route, setRoute] = useState(Route.Menu);
+  const [route, setRoute] = useState(Route.Game);
 
   const handleMenu = () => setRoute(Route.Menu);
   const handleGame = () => setRoute(Route.Game);
